@@ -147,9 +147,16 @@ int main(int argc, char* argv[])
     SDL_AddTimer(TICK_MILLISECONDS, pushTickEvent, NULL);
     GameState state = initGame();
 
-    printf("Error during initialization. SDL_Error: %s\n", SDL_GetError());
+    if (strcmp(SDL_GetError(), "")) {
+        printf("Error during initialization. SDL_Error: %s\n", SDL_GetError());
+        SDL_ClearError();
+    }
 
     while (1) {
+        if (strcmp(SDL_GetError(), "")) {
+            printf("SDL_Error: %s\n", SDL_GetError());
+            SDL_ClearError();
+        }
         SDL_Event ev;
         while (SDL_PollEvent(&ev) != 0) {
             switch (ev.type) {
