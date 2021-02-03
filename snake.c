@@ -26,12 +26,12 @@ typedef enum {
 } Direction;
 
 typedef struct {
-    CellState     grid[GRID_COUNT];
-    cbuf_handle_t snake;
-    Direction     headDir;
-    Direction     lastDir;
-    uint16_t      apple;
-    uint16_t      capacity;
+    CellState grid[GRID_COUNT];
+    cbuf_t*   snake;
+    Direction headDir;
+    Direction lastDir;
+    uint16_t  apple;
+    uint16_t  capacity;
 } GameState;
 
 // Forward function declarations to allow game state functions calling each other
@@ -131,13 +131,19 @@ uint32_t pushTickEvent(uint32_t interval, void* param) {
 }
 
 // Main
-int main(int argc, char* argv[])
-{
+int main() {
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         printf("Initialization failure. SDL_Error: %s\n", SDL_GetError());
         return -1;
     }
-    SDL_Window* window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow(
+        "Snake",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        SCREEN_WIDTH,
+        SCREEN_HEIGHT,
+        SDL_WINDOW_RESIZABLE
+    );
     if(window == NULL) {
         printf("Window creation failure. SDL_Error: %s\n", SDL_GetError());
         SDL_Quit();
@@ -148,13 +154,13 @@ int main(int argc, char* argv[])
     GameState state = initGame();
 
     if (strcmp(SDL_GetError(), "")) {
-        printf("Error during initialization. SDL_Error: %s\n", SDL_GetError());
+        printf("Non-fatal error during initialization. SDL_Error: %s\n", SDL_GetError());
         SDL_ClearError();
     }
 
-    while (1) {
+    while (true) {
         if (strcmp(SDL_GetError(), "")) {
-            printf("SDL_Error: %s\n", SDL_GetError());
+            printf("Non-fatal error. SDL_Error: %s\n", SDL_GetError());
             SDL_ClearError();
         }
         SDL_Event ev;
